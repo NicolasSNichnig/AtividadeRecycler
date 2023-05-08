@@ -1,43 +1,50 @@
 package com.example.atividaderecycler;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager2.widget.ViewPager2;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
-    EditText nome, tipo, preco;
-    ArrayList<Produto> listaProdutos = lista.listaProdutos;
+    TabLayout tab;
+    ViewPager2 pager;
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        nome = findViewById(R.id.txtNome);
-        tipo = findViewById(R.id.txtTipo);
-        preco = findViewById(R.id.numPreco);
-    }
+        tab = findViewById(R.id.tab);
+        pager = findViewById(R.id.pager);
+        FragmentManager fm = getSupportFragmentManager();
+        Adapter adapter = new Adapter(fm, getLifecycle());
+        pager.setAdapter(adapter);
+        tab.addTab(tab.newTab().setText("Cadastro"));
+        tab.addTab(tab.newTab().setText("Lista"));
+        tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                pager.setCurrentItem(tab.getPosition());
+            }
 
-    public void cadastro(View v){
-        try {
-            String name = nome.getText().toString();
-            String type = tipo.getText().toString();
-            float price = Float.parseFloat(preco.getText().toString());
-            Produto p = new Produto(name, type, price);
-            listaProdutos.add(p);
-        }catch (Exception e){Toast.makeText(this, "Insira um valor válido", Toast.LENGTH_SHORT).show();}
-    }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-    public void telaLista(View v){
-        Intent i = new Intent(this, lista.class);
-        startActivity(i);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                tab.selectTab(tab.getTabAt(position));
+            }
+        });
     }
 }

@@ -7,13 +7,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class Adaptador extends RecyclerView.Adapter<Adaptador.MyViewHolder>{
     Context context;
-    ArrayList<Produto> lista = new ArrayList<>();
+    ArrayList<Produto> lista;
     Adaptador.OnItemClickListerner listerner;
 
     public Adaptador(Context context, ArrayList<Produto> lista, OnItemClickListerner listerner) {
