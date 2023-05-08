@@ -31,7 +31,7 @@ public class FragmentCadastro extends Fragment {
     private String mParam2;
     EditText nome, tipo, preco;
     Button btnCadastro;
-    static ArrayList<Produto> listaProdutos = new ArrayList<>();
+    ArrayList<Produto> listaProdutos = new ArrayList<>();
 
     public FragmentCadastro() {
         // Required empty public constructor
@@ -69,6 +69,7 @@ public class FragmentCadastro extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_cadastro, container, false);
         // Inflate the layout for this fragment
+        FragmentLista.listaProdutos = listaProdutos;
         nome = v.findViewById(R.id.txtNome);
         tipo = v.findViewById(R.id.txtTipo);
         preco = v.findViewById(R.id.numPreco);
@@ -84,6 +85,7 @@ public class FragmentCadastro extends Fragment {
             float price = Float.parseFloat(preco.getText().toString());
             Produto p = new Produto(name, type, price);
             listaProdutos.add(p);
+            FragmentLista.listaProdutos = listaProdutos;
         }catch (Exception e){
             Toast.makeText(getContext(), "Insira um valor válido", Toast.LENGTH_SHORT).show();}
     }
