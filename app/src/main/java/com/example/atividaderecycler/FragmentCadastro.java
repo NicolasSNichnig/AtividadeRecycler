@@ -3,7 +3,9 @@ package com.example.atividaderecycler;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.EventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,7 +40,8 @@ public class FragmentCadastro extends Fragment {
     private String mParam2;
     EditText nome, tipo, preco;
     Button btnCadastro;
-    ArrayList<Produto> listaProdutos = new ArrayList<>();
+    Produto produto;
+    //ArrayList<Produto> listaProdutos = new ArrayList<>();
 
     public FragmentCadastro() {
         // Required empty public constructor
@@ -69,24 +79,48 @@ public class FragmentCadastro extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_cadastro, container, false);
         // Inflate the layout for this fragment
-        FragmentLista.listaProdutos = listaProdutos;
+        //FragmentLista.listaProdutos = listaProdutos;
         nome = v.findViewById(R.id.txtNome);
         tipo = v.findViewById(R.id.txtTipo);
         preco = v.findViewById(R.id.numPreco);
         btnCadastro = v.findViewById(R.id.btnCadastro);
-        btnCadastro.setOnClickListener(click -> {cadastro();});
+        btnCadastro.setOnClickListener(click -> {
+            cadastro();
+        });
         return v;
     }
 
-    public void cadastro(){
+    public void cadastro() {
         try {
             String name = nome.getText().toString();
             String type = tipo.getText().toString();
             float price = Float.parseFloat(preco.getText().toString());
             Produto p = new Produto(name, type, price);
-            listaProdutos.add(p);
-            FragmentLista.listaProdutos = listaProdutos;
-        }catch (Exception e){
-            Toast.makeText(getContext(), "Insira um valor válido", Toast.LENGTH_SHORT).show();}
+            verificar(p);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Insira um valor válido", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void verificar(Produto p) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        reference.child("Produtos").child(p.getNome()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    Toast.makeText(getContext(),"Item já existe",Toast.LENGTH_SHORT).show();
+                    return;
+                }else{
+                    p.salvar();
+                    Intent i = new Intent(getContext(), MainActivity.class);
+                    getContext().startActivity(i);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

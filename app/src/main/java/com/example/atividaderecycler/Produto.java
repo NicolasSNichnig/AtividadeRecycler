@@ -1,5 +1,8 @@
 package com.example.atividaderecycler;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class Produto {
     private String nome, tipo;
     private float preco;
@@ -32,5 +35,14 @@ public class Produto {
 
     public void setPreco(float preco) {
         this.preco = preco;
+    }
+
+    public void salvar(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        reference.child("Produtos").child(nome).setValue(this);
+    }
+
+    public Produto(){
+
     }
 }
